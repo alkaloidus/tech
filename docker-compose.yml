@@ -1,0 +1,62 @@
+version: "3"
+
+# More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
+services:
+    pihole:
+        container_name: pihole
+        image: pihole/pihole:latest
+        ports:
+            - 53:53/tcp
+            - 53:53/udp
+            - 67:67/udp
+            - 80:80/tcp
+            - 443:443/tcp
+        environment:
+            - TZ=$tzone
+# WEBPASSWORD: 'set a secure password here or it will be random'
+# Volumes store your data between container upgrades
+        volumes:
+            - /mnt/nas/data/appdata/pihole/etc-pihole/:/etc/pihole/
+            - /mnt/nas/data/appdata/pihole/etc-dnsmasq.d/:/etc/dnsmasq.d/
+# Recommended but not required (DHCP needs NET_ADMIN)
+#   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+        cap_add:
+            - NET_ADMIN
+        restart: always
+        networks:
+            - private
+    kms:
+        image: teddysun/kms
+        container_name: kms
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=$tzone
+        ports:
+            - 1688:1688
+        restart: always
+        networks:
+            - private
+    watchtower:
+        image: containrrr/watchtower
+        container_name: watchtower
+        environment:
+            - WATCHTOWER_NOTIFICATIONS=email
+            - WATCHTOWER_NOTIFICATION_EMAIL_FROM=$yanbox
+            - WATCHTOWER_NOTIFICATION_EMAIL_TO=$mailbox
+            - WATCHTOWER_NOTIFICATION_EMAIL_SERVER=smtp.yandex.ru
+            - WATCHTOWER_NOTIFICATION_EMAIL_SERVER_PORT=587
+            - WATCHTOWER_NOTIFICATION_EMAIL_SERVER_USER=$yanbox
+            - WATCHTOWER_NOTIFICATION_EMAIL_SERVER_PASSWORD=$mail_pass
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        command:
+            --interval 86400
+            --cleanup
+        restart: always
+        networks:
+            - private
+networks:
+    private:
+        external: true
+#            name: private
