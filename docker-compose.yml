@@ -51,8 +51,9 @@ services:
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
         command:
-            --interval 86400
+#            --interval 86400
             --cleanup
+            --schedule "0 0 0 * * *"
         restart: always
         networks:
             - private
