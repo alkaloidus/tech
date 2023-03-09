@@ -26,7 +26,7 @@ services:
         networks:
             - private
     kms:
-        image: teddysun/kms
+        image: teddysun/kms:latest
         container_name: kms
         environment:
             - PUID=1000
@@ -38,7 +38,7 @@ services:
         networks:
             - private
     watchtower:
-        image: containrrr/watchtower
+        image: containrrr/watchtower:latest
         container_name: watchtower
         environment:
             - WATCHTOWER_NOTIFICATIONS=email
