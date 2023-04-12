@@ -54,8 +54,8 @@ services:
         image: teddysun/kms:latest
         container_name: kms
         environment:
-            - PUID=1000
-            - PGID=1000
+            - PUID=$puid
+            - PGID=$guid
             - TZ=$tzone
         ports:
             - 1688:1688
